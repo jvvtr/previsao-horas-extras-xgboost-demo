@@ -110,8 +110,12 @@ def synthetic_panel() -> tuple[pd.DataFrame, pd.DataFrame]:
     raise AssertionError("The calendar must contain a future cycle.")
 
 
-def _matrix(frame: pd.DataFrame) -> xgb.DMatrix:
-    return xgb.DMatrix(frame[list(FEATURES)].astype("float32"))
+def _matrix(frame: pd.DataFrame, feature_names=None) -> xgb.DMatrix:
+    names = list(FEATURES if feature_names is None else feature_names)
+    missing = set(names).difference(frame.columns)
+    if missing:
+        raise ValueError("Os dados não contêm todas as variáveis esperadas pelo modelo.")
+    return xgb.DMatrix(frame[names].astype("float32"))
 
 
 def build_demo(output: Path, rounds: int = 1229) -> dict:
@@ -216,7 +220,10 @@ def build_demo(output: Path, rounds: int = 1229) -> dict:
 
 def audit_demo(booster: xgb.Booster, future: pd.DataFrame, factors: dict[str, float]) -> dict:
     """Reconcile the public forecast with the reached leaves of every demo tree."""
-    matrix = _matrix(future)
+    names = booster.feature_names
+    if not names:
+        raise ValueError("O modelo não contém os nomes das variáveis da auditoria.")
+    matrix = _matrix(future, names)
     raw = booster.predict(matrix).astype("float64")
     scale = future.funcao.map(factors).to_numpy(dtype="float64")
     effective = np.where(raw > 0, scale, 0)
@@ -263,7 +270,7 @@ def audit_demo(booster: xgb.Booster, future: pd.DataFrame, factors: dict[str, fl
     shap = booster.predict(matrix, pred_contribs=True).astype("float64")
     contributions = pd.DataFrame(
         {
-            "variavel": [*FEATURES, "Base SHAP"],
+            "variavel": [*names, "Base SHAP"],
             "efeito_horas": (shap * effective[:, None]).sum(axis=0),
         }
     )

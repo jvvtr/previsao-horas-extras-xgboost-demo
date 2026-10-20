@@ -1,6 +1,7 @@
 """Shared formatting, cached artifacts and charts."""
 
 import json
+import logging
 from pathlib import Path
 
 import altair as alt
@@ -16,14 +17,40 @@ ARTIFACTS = ROOT / "artifacts"
 COLORS = ["#55718a", "#087f73", "#ca8751"]
 
 
+def render_safely(renderer, *args):
+    """Keep internal diagnostics in server logs, never in the public page."""
+    try:
+        renderer(*args)
+    except Exception:
+        logging.getLogger(__name__).exception("Falha ao renderizar o painel público")
+        st.error(
+            "Não foi possível concluir esta operação. Reinicie a aplicação e tente novamente. "
+            "Se o problema persistir, consulte os logs locais ou abra uma issue sem incluir dados pessoais."
+        )
+
+
 def number(value, decimals=0):
     return f"{value:,.{decimals}f}".replace(",", "_").replace(".", ",").replace("_", ".")
 
 
 def version():
     return tuple(
-        (ARTIFACTS / name).stat().st_mtime_ns
-        for name in ("metadata.json", "demo_model.json", "projection_features.csv")
+        path.stat().st_mtime_ns
+        for path in (
+            *(
+                ARTIFACTS / name
+                for name in (
+                    "metadata.json",
+                    "demo_model.json",
+                    "projection_features.csv",
+                    "monthly.csv",
+                    "forecast.csv",
+                    "history.csv",
+                )
+            ),
+            ROOT / "demo_pipeline.py",
+            ROOT / "tree_audit.py",
+        )
     )
 
 

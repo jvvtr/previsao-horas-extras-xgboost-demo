@@ -31,4 +31,20 @@ documentos e downloads. Não adicionar dados reais, screenshots privados,
 credenciais ou arquivos do booster original. O e-mail do autor dos commits
 deste repositório usa o endereço público `noreply` do GitHub.
 
+## Erros e atualização de uma instância aberta
+
+A interface apresenta mensagens genéricas em caso de falha. Os detalhes técnicos
+ficam nos logs do processo que executa o app, e `client.showErrorDetails = "none"`
+oculta mensagens internas e tracebacks de exceções não tratadas.
+Não envie os logs completos ou prints antigos de erro sem revisar caminhos e dados pessoais.
+
+Um traceback usa caminhos da máquina que está executando o processo. Quem clona
+o repositório e executa localmente não recebe os caminhos do computador do autor.
+Em uma instância hospedada, a máquina de execução é o servidor.
+
+Após atualizar o código ou regenerar artefatos em uma instância antiga, encerre
+e inicie novamente o Streamlit. Um processo antigo pode manter módulos Python
+importados com uma versão anterior. A auditoria seleciona as variáveis pelos
+nomes gravados no booster, e os caches incluem as versões dos artefatos e do código.
+
 A execução do app é local; não foi contratado ou configurado serviço de hospedagem.

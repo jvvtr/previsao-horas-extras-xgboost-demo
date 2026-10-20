@@ -8,6 +8,7 @@ import pandas as pd
 import xgboost as xgb
 from streamlit.testing.v1 import AppTest
 
+import demo_pipeline
 from demo_pipeline import FEATURES, _matrix, audit_demo, cycle_label, synthetic_panel
 from tree_audit import audit_package, tree_diagram
 
@@ -92,12 +93,12 @@ def test_streamlit_has_three_pages_and_labels_the_data_as_synthetic():
 
 
 def _trees_page():
-    from dashboard.common import load_artifacts, version
+    from dashboard.common import load_artifacts, render_safely, version
     from dashboard.trees import render_trees
 
     signature = version()
     meta, tables = load_artifacts(signature)
-    render_trees(meta, tables, signature)
+    render_safely(render_trees, meta, tables, signature)
 
 
 def test_tree_page_controls_and_audit_exports():
@@ -108,6 +109,7 @@ def test_tree_page_controls_and_audit_exports():
     app.button(key="run_tree_audit").click().run()
     assert not app.exception
     assert any("Como chegamos à base" in item.value for item in app.markdown)
+    assert not app.error
     app.button(key="load_tree_catalog").click().run()
     assert not app.exception
     app.selectbox(key="inspect_tree_id").select(1229).run()
@@ -115,3 +117,33 @@ def test_tree_page_controls_and_audit_exports():
     app.selectbox(key="tree_audit_cycle").select("2027-09").run()
     app.button(key="run_tree_audit").click().run()
     assert not app.exception
+    assert not app.error
+
+
+def test_audit_uses_the_model_schema_even_if_module_defaults_are_stale(monkeypatch):
+    meta = json.loads((ARTIFACTS / "metadata.json").read_text(encoding="utf-8"))
+    frame = pd.read_csv(ARTIFACTS / "future_features.csv")
+    model = xgb.Booster()
+    model.load_model(ARTIFACTS / "demo_model.json")
+    model.set_param({"nthread": 2})
+    monkeypatch.setattr(demo_pipeline, "FEATURES", ("horas_ciclo_anterior",))
+    trace = audit_demo(model, frame, meta["calibration_factors"])
+    assert np.isclose(trace["total_hours"], meta["future_hours"], atol=0.01)
+    assert trace["contributions"].variavel.tolist() == [*model.feature_names, "Base SHAP"]
+
+
+def _failing_page():
+    from dashboard.common import render_safely
+
+    def fail():
+        raise ValueError("internal-machine-path-must-stay-in-logs")
+
+    render_safely(fail)
+
+
+def test_public_errors_do_not_render_internal_details():
+    app = AppTest.from_function(_failing_page, default_timeout=30).run()
+    assert not app.exception
+    assert len(app.error) == 1
+    assert "Não foi possível" in app.error[0].value
+    assert "internal-machine-path" not in app.error[0].value

@@ -1,8 +1,10 @@
 """Three pages mirroring the final official dashboard, on fictional records."""
 
+import logging
+
 import streamlit as st
 
-from .common import load_artifacts, version
+from .common import load_artifacts, render_safely, version
 from .forecast import render_forecast
 from .method import render_method
 from .style import apply_style
@@ -28,8 +30,12 @@ def main():
     try:
         signature = version()
         meta, tables = load_artifacts(signature)
-    except (FileNotFoundError, ValueError) as error:
-        st.error(f"Artefatos indisponíveis: {error}. Execute python scripts/build_demo.py.")
+    except Exception:
+        logging.getLogger(__name__).exception("Falha ao carregar artefatos sintéticos")
+        st.error(
+            "Artefatos indisponíveis ou incompatíveis. Reinicie a aplicação. "
+            "Se necessário, execute python scripts/build_demo.py para regenerar a demonstração."
+        )
         st.stop()
     forecast, trees, method = st.tabs(
         ["Previsão", "Explicabilidade das árvores", "Como funciona o XGBoost"],
@@ -38,10 +44,10 @@ def main():
     )
     if forecast.open:
         with forecast:
-            render_forecast(meta, tables)
+            render_safely(render_forecast, meta, tables)
     if trees.open:
         with trees:
-            render_trees(meta, tables, signature)
+            render_safely(render_trees, meta, tables, signature)
     if method.open:
         with method:
-            render_method(meta, tables)
+            render_safely(render_method, meta, tables)
