@@ -10,5 +10,5 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements-dev.txt
-      - run: ruff check app.py demo_pipeline.py scripts tests
+      - run: ruff check app.py demo_pipeline.py tree_audit.py dashboard scripts tests
       - run: pytest -q

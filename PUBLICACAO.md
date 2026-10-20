@@ -12,6 +12,9 @@ Os arquivos em `artifacts/` são regenerados integralmente por
 | `metadata.json` | Períodos, fatores e métricas da simulação. |
 | `monthly.csv` | Totais mensais sintéticos. |
 | `future_features.csv` | Variáveis fictícias sem identificador pessoal. |
+| `projection_features.csv` | Variáveis de cada um dos 12 ciclos projetados. |
+| `forecast.csv` | Projeções recursivas sintéticas e seus períodos. |
+| `history.csv` | Totais de todo o histórico sintético. |
 
 Para compartilhar prints do painel privado separadamente, revise antes de
 publicar: nomes de empresas/unidades, códigos de pessoas, funções raras,

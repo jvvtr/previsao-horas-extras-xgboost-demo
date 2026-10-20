@@ -11,6 +11,9 @@ seu booster e seus resultados detalhados continuam em um repositório privado.
 - Previsão do próximo ciclo fictício e métricas calculadas somente na simulação.
 - Reconciliação do valor-base, fatores por função e efeitos de todas as árvores.
 - Perguntas e folhas de uma árvore selecionada.
+- Diagramas de qualquer uma das 1.229 árvores sintéticas e rotas percorridas.
+- Contribuições SHAP, auditoria completa em ZIP e catálogo em CSV/JSON.
+- Projeções recursivas de até 12 ciclos e downloads da avaliação mensal.
 - Separação temporal entre treino (2020–2023), calibração (2024) e teste (2025–set/2026).
 
 Os indicadores desta página **não são os indicadores do modelo privado**. A
@@ -23,12 +26,12 @@ Requer Python 3.11 ou superior.
 
 ```bash
 python -m venv .venv
-python -m pip install -r requirements.txt
-streamlit run app.py
+.venv/Scripts/python.exe -m pip install -r requirements.txt
+.venv/Scripts/python.exe -m streamlit run app.py
 ```
 
-No Windows, use .venv/Scripts/python.exe para instalar e executar. Os quatro
-artefatos necessários já estão em `artifacts/`; o app não treina ao abrir.
+Os comandos acima são para Windows. Em Linux/macOS, use `.venv/bin/python`.
+Os artefatos necessários já estão em `artifacts/`; o app não treina ao abrir.
 
 Para refazer o treinamento com a mesma semente sintética:
 
@@ -41,7 +44,7 @@ Para verificar a implementação:
 ```bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
-python -m ruff check app.py demo_pipeline.py scripts tests
+python -m ruff check app.py demo_pipeline.py tree_audit.py dashboard scripts tests
 ```
 
 ## Como os dados foram criados
@@ -55,6 +58,15 @@ O treino usa apenas ciclos anteriores à calibração e ao teste. A calibração
 aprende fatores por função com o ano de 2024. O teste usa o realizado do ciclo
 anterior como histórico: mede uma previsão de um ciclo à frente, não valida
 automaticamente uma projeção recursiva longa.
+
+A quantidade de 1.229 árvores é fixa para reproduzir a experiência do painel
+original; não foi selecionada como a melhor quantidade para a simulação.
+O calendário representa ciclos do dia 16 ao dia 15. A coorte permanece fixa.
+
+## Documentação
+
+Leia o [guia de documentação](docs/README.md) para entender o painel, o modelo,
+a correspondência com o projeto privado e os controles de qualidade.
 
 ## Publicação
 

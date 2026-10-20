@@ -15,10 +15,18 @@
     "2026-09"
   ],
   "future_cycle": "2026-10",
-  "tree_count": 120,
+  "tree_count": 1229,
+  "tree_count_policy": "fixed_for_demonstration",
   "features": [
     "horas_ciclo_anterior",
+    "horas_2_ciclos_atras",
     "media_3_ciclos",
+    "media_6_ciclos",
+    "horas_folga_anterior",
+    "horas_trabalho_anterior",
+    "media_equipe_anterior",
+    "tempo_casa_meses",
+    "dias_uteis_ciclo",
     "mes_sin",
     "mes_cos",
     "unidade_0",
@@ -29,11 +37,12 @@
     "funcao_2"
   ],
   "calibration_factors": {
-    "Logística": 0.9358158893206989,
-    "Manutenção": 0.9509958113594044,
-    "Operação": 0.9449069072119238
+    "Logística": 0.9382804177552333,
+    "Manutenção": 0.9445611461687757,
+    "Operação": 0.9340807273018235
   },
-  "mape_pct": 3.1144255464609074,
-  "wape_pct": 3.162911154194465,
-  "future_hours": 926.5048681287495
+  "mape_pct": 3.542538349587973,
+  "wape_pct": 3.60496546031184,
+  "mae_hours": 38.7072271576203,
+  "future_hours": 925.5039206537108
 }
