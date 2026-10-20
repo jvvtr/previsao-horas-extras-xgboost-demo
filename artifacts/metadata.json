@@ -1,0 +1,39 @@
+{
+  "data_origin": "synthetic",
+  "seed": 20261020,
+  "people": 180,
+  "training_cycles": [
+    "2020-01",
+    "2023-12"
+  ],
+  "calibration_cycles": [
+    "2024-01",
+    "2024-12"
+  ],
+  "test_cycles": [
+    "2025-01",
+    "2026-09"
+  ],
+  "future_cycle": "2026-10",
+  "tree_count": 120,
+  "features": [
+    "horas_ciclo_anterior",
+    "media_3_ciclos",
+    "mes_sin",
+    "mes_cos",
+    "unidade_0",
+    "unidade_1",
+    "unidade_2",
+    "funcao_0",
+    "funcao_1",
+    "funcao_2"
+  ],
+  "calibration_factors": {
+    "Logística": 0.9358158893206989,
+    "Manutenção": 0.9509958113594044,
+    "Operação": 0.9449069072119238
+  },
+  "mape_pct": 3.1144255464609074,
+  "wape_pct": 3.162911154194465,
+  "future_hours": 926.5048681287495
+}
